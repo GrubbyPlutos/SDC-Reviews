@@ -63,7 +63,7 @@ app.get('/restaurants/:id/reviews', (req, res) => {
           throw err;
         } else {
           console.log('restaurant data....', data);
-          console.log('reviews data....', results);
+          // console.log('reviews data....', results);
         }
       })
     }

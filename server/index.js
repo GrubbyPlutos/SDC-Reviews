@@ -51,24 +51,21 @@ app.get('/restaurants/:id', (req, res) => {
   res.status(200).sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
-// app.get('/reviews', (req, res) => {
-//   // on reviews router get all reviews from the database
-//   db.getAllReviews((err, data) => {
-//     if (err) {
-//       res.status(501).send(err);
-//     } else {
-//       res.status(200).send(data);
-//     }
-//   });
-// });
 
 app.get('/restaurants/:id/reviews', (req, res) => {
-  // on reviews router get all reviews from the database
-  db.getReviewsByRestaurantId(req.params.id, (err, data) => {
+  console.log('hi');
+  db.getRestaurantName(req.params.id, (err, data) => {
     if (err) {
       res.status(501).send(err);
     } else {
-      res.status(200).send(data);
+      db.getAllReviews(req.params.id, (err, results) => {
+        if (err) {
+          throw err;
+        } else {
+          console.log('restaurant data....', data);
+          console.log('reviews data....', results);
+        }
+      })
     }
   });
 });

@@ -62,8 +62,8 @@ app.get('/restaurants/:id/reviews', (req, res) => {
         if (err) {
           throw err;
         } else {
-          console.log('restaurant data....', data);
-          // console.log('reviews data....', results);
+          let combined = data.rows.concat(results.rows);
+          console.log(combined);
         }
       })
     }

@@ -53,7 +53,6 @@ app.get('/restaurants/:id', (req, res) => {
 
 
 app.get('/restaurants/:id/reviews', (req, res) => {
-  console.log('hi');
   db.getRestaurantName(req.params.id, (err, data) => {
     if (err) {
       res.status(501).send(err);
@@ -63,12 +62,42 @@ app.get('/restaurants/:id/reviews', (req, res) => {
           throw err;
         } else {
           let combined = data.rows.concat(results.rows);
-          console.log(combined);
+          res.status(200).send(combined);
         }
       })
     }
   });
 });
+
+app.post('/reviews', (req, res) => {
+  db.addReview(req.body, (err) => {
+    if (err) {
+      res.status(500).send(err)
+    } else {
+      res.status(201);
+    }
+  });
+});
+
+app.delete('/deleteReview', (req, res) => {
+  db.deleteReview(req.body, (err) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(202)
+    }
+  });
+});
+
+app.put('/updateReview', (req, res) => {
+  db.updateReview(req.body, (err) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(204);
+    }
+  })
+})
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);

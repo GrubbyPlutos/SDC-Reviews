@@ -1,7 +1,9 @@
+require('newrelic');
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const db = require('../database-Cassandra/controllers.js');
+
 // const { seedDB } = require('../database-MySQL/seeds');
 
 const app = express();
@@ -62,7 +64,6 @@ app.get('/restaurants/:id/reviews', (req, res) => {
           throw error;
         } else {
           const combined = data.rows.concat(results.rows);
-          console.log(combined);
           res.status(200).send(combined);
         }
       });

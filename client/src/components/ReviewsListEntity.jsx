@@ -13,7 +13,7 @@ const ReviewsListEntity = (props) => {
     </div>
     <div className="review-user" style={style.reviewUser}>
       <div className="circle" style={style.circle}>
-        {props.review.user_name.substring(0,1)}
+        {props.review.username.substring(0,1)}
       </div>
       <div>
         <div className="user-name" style={style.userName}>
@@ -37,7 +37,7 @@ const ReviewsListEntity = (props) => {
     </div>
     <Stars reviews_number={1} rate={props.review.rating}/>
     <div>{props.review.content}</div>
-    <OrderList user_name={props.review.user_name} order_items={props.review.order_items} menu={props.review.menu}/>
+    <OrderList user_name={props.review.user_name} order_items={props.review.order_items} menu={props.menu}/>
   </div>
   );
 };

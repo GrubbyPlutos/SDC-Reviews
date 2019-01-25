@@ -3,9 +3,17 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const db = require('../database-Cassandra/controllers.js');
+const redis = require('redis');
+const client = redis.createClient();
 
 // const { seedDB } = require('../database-MySQL/seeds');
-
+client.on('error', function (err) {
+  console.log('Error ' + err);
+});
+client.on('connect', () => {
+  console.log(`You're connected to redis!`);
+});
+// client.flushdb((err, success) => console.log('all cleared') );
 const app = express();
 const PORT = 3004;
 
@@ -55,21 +63,48 @@ app.get('/restaurants/:id', (req, res) => {
 
 
 app.get('/restaurants/:id/reviews', (req, res) => {
-  db.getRestaurantName(req.params.id, (err, data) => {
+  client.get(`${req.params.id}`, (err, result) => {
     if (err) {
-      res.status(501).send(err);
+      res.send(err);
+      return;
+    }
+    if (result !== null) {
+      let final = JSON.parse(result);
+      res.send(final);
     } else {
-      db.getAllReviews(req.params.id, (error, results) => {
-        if (error) {
-          throw error;
+      db.getRestaurantName(req.params.id, (errors, data) => {
+        if (errors) {
+          res.status(501).send(errors);
         } else {
-          const combined = data.rows.concat(results.rows);
-          res.status(200).send(combined);
+          db.getAllReviews(req.params.id, (error, results) => {
+            if (error) {
+              throw error;
+            } else {
+              const combined = data.rows.concat(results.rows);
+              client.set(`${req.params.id}`, JSON.stringify(combined), 'EX', 300);
+              res.status(200).send(combined);
+            }
+          });
         }
       });
     }
   });
 });
+
+// app.get('/restaurants/:id/reviews', (req, res) => {
+//   db.getRestaurantName(req.params.id, (errors, data) => {
+//     if (errors) {
+//       res.status(501).send(errors);
+//     } else {
+//       db.getAllReviews(req.params.id, (error, results) => {
+//         if (error) {
+//           throw error;
+//         } else {
+//           const combined = data.rows.concat(results.rows);
+//           client.set(`${req.params.id}`, combined, 'EX', 300);
+//           res.status(200).send(combined);
+//         }
+// })
 
 app.post('/reviews', (req, res) => {
   db.addReview(req.body, (err) => {
